@@ -183,6 +183,22 @@
 
             const xr = await scene.createDefaultXRExperienceAsync({
                 floorMeshes: [env.ground]
+            }).then((xr) => {
+                
+                const featuresManager = xr.baseExperience.featuresManager;
+
+                featuresManager.disableFeature(BABYLON.WebXRFeatureName.TELEPORTATION);
+                
+                // Enable movement with controller
+                const xrMovement = featuresManager.enableFeature(
+                    BABYLON.WebXRFeatureName.MOVEMENT,
+                    "stable",
+                    {
+                        xrInput: xr.input,
+                        movementOrientationFollowsViewerPose: true
+                    }
+                );
+                
             });
 
             return scene;
