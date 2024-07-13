@@ -173,6 +173,12 @@
     BABYLON.SceneLoader.ImportMeshAsync("", "https://assets.babylonjs.com/meshes/", "valleyvillage.glb").then(() => {
         scene.getMeshByName("ground").material.maxSimultaneousLights = 5;
     });
+
+    const env = scene.createDefaultEnvironment();
+
+    const xr = await scene.createDefaultXRExperienceAsync({
+        floorMeshes: [env.ground]
+    });
     
     return scene;
 };
