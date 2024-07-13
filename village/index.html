@@ -206,7 +206,8 @@
             window.scene = createScene();
         };
         initFunction().then(() => {
-            sceneToRender = scene
+            //sceneToRender = scene
+            scene.then(returnedScene => { sceneToRender = returnedScene; });
         });
 
         // Resize
