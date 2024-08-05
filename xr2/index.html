@@ -174,14 +174,17 @@
                     b.isVisible = true;
 
                     var cloneModel = b.clone();
-                    cloneModel.scaling = new BABYLON.Vector3(0.05, 0.05, 0.05);
-                    //cloneModel.skeleton = skeleton.clone('skelet');
+                    cloneModel.skeleton = skeleton.clone('skelet');
 
                     anchor.attachedNode = cloneModel;
-                    
+
                     shadowGenerator.addShadowCaster(anchor.attachedNode, true);
                     //scene.beginAnimation(anchor.attachedNode.skeleton, idleRange.from, idleRange.to, true);
                     b.isVisible = false;
+                })
+
+                anchors.onAnchorUpdatedObservable.add(anchor => {
+                    anchor.attachedNode.scaling.setAll(0.1)
                 })
 
                 anchors.onAnchorRemovedObservable.add(anchor => {
@@ -192,6 +195,8 @@
                     }
                 });
             }
+
+
 
             scene.onPointerDown = (evt, pickInfo) => {
                 if (hitTest && anchors && xr.baseExperience.state === BABYLON.WebXRState.IN_XR) {
