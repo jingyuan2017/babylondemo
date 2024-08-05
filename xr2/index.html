@@ -101,7 +101,9 @@
             shadowGenerator.useBlurExponentialShadowMap = true;
             shadowGenerator.blurKernel = 32;
 
-            const model = await BABYLON.SceneLoader.ImportMeshAsync("", "https://playground.babylonjs.com/scenes/", "dummy3.babylon", scene);
+            //const model = await BABYLON.SceneLoader.ImportMeshAsync("", "https://playground.babylonjs.com/scenes/", "dummy3.babylon", scene);
+
+            const model = await BABYLON.SceneLoader.ImportMeshAsync("", Assets.meshes.Yeti.rootUrl, Assets.meshes.Yeti.filename, scene);
 
             var xr = await scene.createDefaultXRExperienceAsync({
                 uiOptions: {
@@ -122,7 +124,7 @@
             let b = model.meshes[0];//BABYLON.CylinderBuilder.CreateCylinder('cylinder', { diameterBottom: 0.2, diameterTop: 0.4, height: 0.5 });
             b.scaling = new BABYLON.Vector3(0.05, 0.05, 0.05);
             b.rotationQuaternion = new BABYLON.Quaternion();
-            // b.isVisible = false;
+            b.isVisible = false;
             shadowGenerator.addShadowCaster(b, true);
 
             const marker = BABYLON.MeshBuilder.CreateTorus('marker', { diameter: 0.15, thickness: 0.05 });
@@ -142,7 +144,7 @@
             var runRange = skeleton.getAnimationRange("YBot_Run");
             var leftRange = skeleton.getAnimationRange("YBot_LeftStrafeWalk");
             var rightRange = skeleton.getAnimationRange("YBot_RightStrafeWalk");
-            scene.beginAnimation(skeleton, idleRange.from, idleRange.to, true);
+            //scene.beginAnimation(skeleton, idleRange.from, idleRange.to, true);
 
             let hitTest;
 
@@ -172,7 +174,7 @@
                     anchor.attachedNode = b.clone("mensch");
                     anchor.attachedNode.skeleton = skeleton.clone('skelet');
                     shadowGenerator.addShadowCaster(anchor.attachedNode, true);
-                    scene.beginAnimation(anchor.attachedNode.skeleton, idleRange.from, idleRange.to, true);
+                    //scene.beginAnimation(anchor.attachedNode.skeleton, idleRange.from, idleRange.to, true);
                     b.isVisible = false;
                 })
 
