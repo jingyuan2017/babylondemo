@@ -156,7 +156,6 @@
                     hitTest = results[0];
                     hitTest.transformationMatrix.decompose(undefined, b.rotationQuaternion, b.position);
                     hitTest.transformationMatrix.decompose(undefined, marker.rotationQuaternion, marker.position);
-                    marker.scaling = new BABYLON.Vector3(0.05, 0.05, 0.05);
                 } else {
                     marker.isVisible = false;
                     hitTest = undefined;
@@ -174,6 +173,7 @@
                     b.isVisible = true;
                     anchor.attachedNode = b.clone("mensch");
                     anchor.attachedNode.skeleton = skeleton.clone('skelet');
+                    anchor.attachedNode.scaling = new BABYLON.Vector3(0.05, 0.05, 0.05);
                     shadowGenerator.addShadowCaster(anchor.attachedNode, true);
                     //scene.beginAnimation(anchor.attachedNode.skeleton, idleRange.from, idleRange.to, true);
                     b.isVisible = false;
