@@ -101,9 +101,7 @@
             shadowGenerator.useBlurExponentialShadowMap = true;
             shadowGenerator.blurKernel = 32;
 
-            //const model = await BABYLON.SceneLoader.ImportMeshAsync("", "./scenes/", "dummy3.babylon", scene);
-            
-            const model = await BABYLON.SceneLoader.ImportMeshAsync("", Assets.meshes.Yeti.rootUrl, Assets.meshes.Yeti.filename , scene);
+            const model = await BABYLON.SceneLoader.ImportMeshAsync("", "./scenes/", "dummy3.babylon", scene);
 
             var xr = await scene.createDefaultXRExperienceAsync({
                 uiOptions: {
@@ -122,9 +120,7 @@
             const xrBackgroundRemover = fm.enableFeature(BABYLON.WebXRBackgroundRemover.Name);
 
             let b = model.meshes[0];//BABYLON.CylinderBuilder.CreateCylinder('cylinder', { diameterBottom: 0.2, diameterTop: 0.4, height: 0.5 });
-            
             b.scaling = new BABYLON.Vector3(0.05, 0.05, 0.05);
-
             b.rotationQuaternion = new BABYLON.Quaternion();
             // b.isVisible = false;
             shadowGenerator.addShadowCaster(b, true);
@@ -133,10 +129,9 @@
             marker.isVisible = false;
             marker.rotationQuaternion = new BABYLON.Quaternion();
 
-            //var skeleton = model.skeletons[0];
+            var skeleton = model.skeletons[0];
 
             // ROBOT
-            /*
             skeleton.animationPropertiesOverride = new BABYLON.AnimationPropertiesOverride();
             skeleton.animationPropertiesOverride.enableBlending = true;
             skeleton.animationPropertiesOverride.blendingSpeed = 0.05;
@@ -148,7 +143,6 @@
             var leftRange = skeleton.getAnimationRange("YBot_LeftStrafeWalk");
             var rightRange = skeleton.getAnimationRange("YBot_RightStrafeWalk");
             scene.beginAnimation(skeleton, idleRange.from, idleRange.to, true);
-            */
 
             let hitTest;
 
@@ -178,7 +172,7 @@
                     anchor.attachedNode = b.clone("mensch");
                     anchor.attachedNode.skeleton = skeleton.clone('skelet');
                     shadowGenerator.addShadowCaster(anchor.attachedNode, true);
-                    //scene.beginAnimation(anchor.attachedNode.skeleton, idleRange.from, idleRange.to, true);
+                    scene.beginAnimation(anchor.attachedNode.skeleton, idleRange.from, idleRange.to, true);
                     b.isVisible = false;
                 })
 
