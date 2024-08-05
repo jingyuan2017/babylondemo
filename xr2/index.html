@@ -172,10 +172,10 @@
                 anchors.onAnchorAddedObservable.add(anchor => {
                     console.log('attaching', anchor);
                     b.isVisible = true;
-                    
+
                     var cloneModel = b.clone("mensch");
                     cloneModel.scaling = new BABYLON.Vector3(0.05, 0.05, 0.05);
-                    cloneModel.skeleton = skeleton.clone('skelet');
+                    //cloneModel.skeleton = skeleton.clone('skelet');
 
                     anchor.attachedNode = cloneModel;
                     
