@@ -126,10 +126,10 @@
             
             //BABYLON.CylinderBuilder.CreateCylinder('cylinder', { diameterBottom: 0.2, diameterTop: 0.4, height: 0.5 });
 
-            //let b = model.meshes[0];
-            //b.rotationQuaternion = new BABYLON.Quaternion();
-            // b.isVisible = false;
-            //shadowGenerator.addShadowCaster(b, true);
+            let b = model.meshes[0];
+            b.rotationQuaternion = new BABYLON.Quaternion();
+            //b.isVisible = false;
+            shadowGenerator.addShadowCaster(b, true);
         
             const marker = BABYLON.MeshBuilder.CreateTorus('marker', { diameter: 0.15, thickness: 0.05 });
             marker.isVisible = false;
