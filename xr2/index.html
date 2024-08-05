@@ -99,10 +99,14 @@
             shadowGenerator.blurKernel = 32;
         
             //const model = await BABYLON.SceneLoader.ImportMeshAsync("", "./scenes/", "dummy3.babylon", scene);
-            const model = await BABYLON.SceneLoader.ImportMeshAsync("", Assets.meshes.Yeti.rootUrl, Assets.meshes.Yeti.filename, scene, function (newMeshes) {
-                newMeshes[0].scaling = new BABYLON.Vector3(0.1, 0.1, 0.1);
-                newMeshes[0].position.z = 2;
-            });
+            
+            //const model = await BABYLON.SceneLoader.ImportMeshAsync("", Assets.meshes.Yeti.rootUrl, Assets.meshes.Yeti.filename, scene, function (newMeshes) {
+            //    newMeshes[0].scaling = new BABYLON.Vector3(0.1, 0.1, 0.1);
+            //    newMeshes[0].position.z = 2;
+            //});
+
+            const model = await BABYLON.SceneLoader.ImportMeshAsync("", Assets.meshes.Yeti.rootUrl, Assets.meshes.Yeti.filename, scene);
+
 
             var xr = await scene.createDefaultXRExperienceAsync({
                 uiOptions: {
