@@ -105,11 +105,7 @@
             //    newMeshes[0].position.z = 2;
             //});
 
-            const model = await BABYLON.SceneLoader.ImportMeshAsync("", Assets.meshes.Yeti.rootUrl, Assets.meshes.Yeti.filename, scene).then((meshes) => {
-                if (meshes && meshes.length > 0) {
-                meshes[0].scaling = new BABYLON.Vector3(0.1,0.1,0.1); // 将模型缩小到原来的 50%
-                }
-            });
+            const model = await BABYLON.SceneLoader.ImportMeshAsync("", Assets.meshes.Yeti.rootUrl, Assets.meshes.Yeti.filename, scene);
 
 
             var xr = await scene.createDefaultXRExperienceAsync({
@@ -131,6 +127,9 @@
             //BABYLON.CylinderBuilder.CreateCylinder('cylinder', { diameterBottom: 0.2, diameterTop: 0.4, height: 0.5 });
 
             let b = model.meshes[0];
+
+            b.scaling = new BABYLON.Vector3(0.1,0.1,0.1); // 将模型缩小到原来的 10%
+
             b.rotationQuaternion = new BABYLON.Quaternion();
             //b.isVisible = false;
             shadowGenerator.addShadowCaster(b, true);
