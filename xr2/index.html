@@ -99,7 +99,7 @@
             shadowGenerator.blurKernel = 32;
         
             //const model = await BABYLON.SceneLoader.ImportMeshAsync("", "./scenes/", "dummy3.babylon", scene);
-            const model = await BABYLON.SceneLoader.ImportMesh("", Assets.meshes.Yeti.rootUrl, Assets.meshes.Yeti.filename, scene, function (newMeshes) {
+            const model = await BABYLON.SceneLoader.ImportMeshAsync("", Assets.meshes.Yeti.rootUrl, Assets.meshes.Yeti.filename, scene, function (newMeshes) {
                 newMeshes[0].scaling = new BABYLON.Vector3(0.1, 0.1, 0.1);
                 newMeshes[0].position.z = 2;
             });
@@ -119,11 +119,13 @@
             const anchors = fm.enableFeature(BABYLON.WebXRAnchorSystem.Name, 'latest');
         
             const xrBackgroundRemover = fm.enableFeature(BABYLON.WebXRBackgroundRemover.Name);
-        
-            let b = model.meshes[0];//BABYLON.CylinderBuilder.CreateCylinder('cylinder', { diameterBottom: 0.2, diameterTop: 0.4, height: 0.5 });
-            b.rotationQuaternion = new BABYLON.Quaternion();
+            
+            //BABYLON.CylinderBuilder.CreateCylinder('cylinder', { diameterBottom: 0.2, diameterTop: 0.4, height: 0.5 });
+
+            //let b = model.meshes[0];
+            //b.rotationQuaternion = new BABYLON.Quaternion();
             // b.isVisible = false;
-            shadowGenerator.addShadowCaster(b, true);
+            //shadowGenerator.addShadowCaster(b, true);
         
             const marker = BABYLON.MeshBuilder.CreateTorus('marker', { diameter: 0.15, thickness: 0.05 });
             marker.isVisible = false;
