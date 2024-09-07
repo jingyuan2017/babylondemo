@@ -209,7 +209,9 @@
             const panelWidth = 5;
             const panelHeight = 5;
             const panel = BABYLON.MeshBuilder.CreatePlane("panel", { width: panelWidth, height: panelHeight }, scene);
-            panel.position.z = -1; // 面板在前方2个单位的位置
+            panel.position.z = 4; // 面板在前方2个单位的位置
+            panel.position.x = 0; // 面板在前方2个单位的位置
+            panel.position.y = 0; // 面板在前方2个单位的位置
 
             // 创建UI
             const advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateForMesh(panel);
