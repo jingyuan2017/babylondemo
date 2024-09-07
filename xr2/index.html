@@ -204,6 +204,23 @@
                 }
             }
 
+
+            // 创建面板
+            const panelWidth = 5;
+            const panelHeight = 5;
+            const panel = BABYLON.MeshBuilder.CreatePlane("panel", { width: panelWidth, height: panelHeight }, scene);
+            panel.position.z = -1; // 面板在前方2个单位的位置
+
+            // 创建UI
+            const advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateForMesh(panel);
+            const textBlock = new BABYLON.GUI.TextBlock();
+            textBlock.text = "Hello, XR!";
+            textBlock.color = "blue";
+            textBlock.fontSize = 120;
+            advancedTexture.addControl(textBlock);
+
+
+
             const planes = [];
 
             xrPlanes.onPlaneAddedObservable.add(plane => {
