@@ -197,38 +197,48 @@
             }
             
 
-            // 创建面板
-            const panelWidth = 50;
-            const panelHeight = 50;
-            const panel = BABYLON.MeshBuilder.CreatePlane("panel", { width: panelWidth, height: panelHeight }, scene);
-            panel.position.z = 1; // 面板在前方2个单位的位置
-            panel.position.x = 0; // 面板在前方2个单位的位置
-            panel.position.y = 2; // 面板在前方2个单位的位置
+            // Our built-in 'sphere' shape. Params: name, subdivs, size, scene
+            var sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 2, scene);
+
+            // Move the sphere upward 1/2 its height
+            sphere.position.y = 1;
+
+            // GUI
+            var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+            advancedTexture.idealWidth = 600;
             
+            var rect1 = new BABYLON.GUI.Rectangle();
+            rect1.width = 0.2;
+            rect1.height = "40px";
+            rect1.cornerRadius = 20;
+            rect1.color = "Orange";
+            rect1.thickness = 4;
+            rect1.background = "green";
+            advancedTexture.addControl(rect1);
+            rect1.linkWithMesh(sphere);   
+            rect1.linkOffsetY = -150;
 
-            // 使用GUI3DManager
-            const gui3DManager = new BABYLON.GUI.GUI3DManager(scene);
+            var label = new BABYLON.GUI.TextBlock();
+            label.text = "Sphere";
+            rect1.addControl(label);
 
-            // 创建背景矩形
-            const background = new BABYLON.GUI.Rectangle();
-            background.width = panelWidth + "px";
-            background.height = panelHeight + "px";
-            background.cornerRadius = 10;
-            background.background = "blue";
-            background.thickness = 0;
-            background.alpha = 0.8;
+            var target = new BABYLON.GUI.Ellipse();
+            target.width = "40px";
+            target.height = "40px";
+            target.color = "Orange";
+            target.thickness = 4;
+            target.background = "green";
+            advancedTexture.addControl(target);
+            target.linkWithMesh(sphere);   
 
-            // 创建文本
-            const textBlock = new BABYLON.GUI.TextBlock();
-            textBlock.text = "This is a long text that should wrap";
-            textBlock.color = "white";
-            textBlock.fontSize = 4;
-            textBlock.textWrapping = true; // 开启自动换行
-
-            // 将背景和文本添加到高级动态纹理
-            const advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateForMesh(panel);
-            advancedTexture.addControl(background);
-            advancedTexture.addControl(textBlock);
+            var line = new BABYLON.GUI.Line();
+            line.lineWidth = 4;
+            line.color = "Orange";
+            line.y2 = 20;
+            line.linkOffsetY = -20;
+            advancedTexture.addControl(line);
+            line.linkWithMesh(sphere); 
+            line.connectedControl = rect1;  
 
 
 
