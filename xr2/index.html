@@ -198,28 +198,37 @@
             
 
             // 创建面板
-            const panelWidth = 5;
-            const panelHeight = 5;
+            const panelWidth = 50;
+            const panelHeight = 50;
             const panel = BABYLON.MeshBuilder.CreatePlane("panel", { width: panelWidth, height: panelHeight }, scene);
             panel.position.z = 1; // 面板在前方2个单位的位置
             panel.position.x = 0; // 面板在前方2个单位的位置
             panel.position.y = 2; // 面板在前方2个单位的位置
+            
 
-            // 创建UI
-            const advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateForMesh(panel);
+            // 使用GUI3DManager
+            const gui3DManager = new BABYLON.GUI.GUI3DManager(scene);
+
+            // 创建背景矩形
+            const background = new BABYLON.GUI.Rectangle();
+            background.width = panelWidth + "px";
+            background.height = panelHeight + "px";
+            background.cornerRadius = 10;
+            background.background = "blue";
+            background.thickness = 0;
+            background.alpha = 0.8;
+
+            // 创建文本
             const textBlock = new BABYLON.GUI.TextBlock();
-            textBlock.text = "Hello, XR!";
-            textBlock.color = "blue";
-            textBlock.fontSize = 60;
+            textBlock.text = "This is a long text that should wrap";
+            textBlock.color = "white";
+            textBlock.fontSize = 4;
+            textBlock.textWrapping = true; // 开启自动换行
+
+            // 将背景和文本添加到高级动态纹理
+            const advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateForMesh(panel);
+            advancedTexture.addControl(background);
             advancedTexture.addControl(textBlock);
-
-
-            scene.onPointerDown = (evt, pickInfo) => {
-                if (hitTest && anchors && xr.baseExperience.state === BABYLON.WebXRState.IN_XR) {
-                    anchors.addAnchorPointUsingHitTestResultAsync(hitTest);
-                }
-                textBlock.text = textBlock.text + "!";
-            }
 
 
 
