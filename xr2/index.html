@@ -205,14 +205,14 @@
 
             // GUI
             var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-            advancedTexture.idealWidth = 600;
+            advancedTexture.idealWidth = 1080;
             
             var rect1 = new BABYLON.GUI.Rectangle();
             rect1.width = 0.2;
-            rect1.height = "40px";
+            rect1.height = "20px";
             rect1.cornerRadius = 1;
             rect1.color = "Orange";
-            rect1.thickness = 4;
+            rect1.thickness = 1;
             rect1.background = "green";
             advancedTexture.addControl(rect1);
             rect1.linkWithMesh(sphere);   
