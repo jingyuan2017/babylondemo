@@ -101,7 +101,7 @@
             shadowGenerator.useBlurExponentialShadowMap = true;
             shadowGenerator.blurKernel = 32;
 
-            const model = await BABYLON.SceneLoader.ImportMeshAsync("", "/models/", "threejs_vrm_sample.glb", scene);
+            const model = await BABYLON.SceneLoader.ImportMeshAsync("", "https://ai.58auv.com/models/", "threejs_vrm_sample.glb", scene);
 
             //const model = await BABYLON.SceneLoader.ImportMeshAsync("", "/models/", "dummy3.babylon", scene);
 
@@ -126,12 +126,14 @@
             let b = model.meshes[0];//BABYLON.CylinderBuilder.CreateCylinder('cylinder', { diameterBottom: 0.2, diameterTop: 0.4, height: 0.5 });
             //b.rotationQuaternion = new BABYLON.Quaternion();
 
-            //对象旋转90度
-            const rotationMatrix = BABYLON.Matrix.RotationY(Math.PI / 2); // Math.PI radians is 180 degrees
-            // Apply the rotation to the mesh
-            b.rotationQuaternion = BABYLON.Quaternion.FromRotationMatrix(rotationMatrix).multiply(b.rotationQuaternion || BABYLON.Quaternion.Identity());
+            console.log("before : " + b.rotation);
 
-            b.isVisible = false;
+            var beta = Math.random() * 2 * Math.PI;
+            b.rotate(BABYLON.Axis.Y, beta, BABYLON.Space.WORLD);
+
+            console.log("after : " + b.rotation);
+
+            //b.isVisible = false;
             shadowGenerator.addShadowCaster(b, true);
 
             const marker = BABYLON.MeshBuilder.CreateTorus('marker', { diameter: 0.15, thickness: 0.05 });
@@ -157,18 +159,21 @@
 
             let hitTest;
 
-            b.isVisible = false;
-            b.scaling = new BABYLON.Vector3(0.1, 0.1, 0.1);
+            //b.isVisible = false;
+            b.scaling = new BABYLON.Vector3(0.2, 0.2, 0.2);
+
+
+
 
             xrTest.onHitTestResultObservable.add((results) => {
                 if (results.length) {
                     marker.isVisible = true;
-                    b.isVisible = false;
+                    //b.isVisible = false;
                     hitTest = results[0];
-                    hitTest.transformationMatrix.decompose(undefined, b.rotationQuaternion, b.position);
+                    //hitTest.transformationMatrix.decompose(undefined, b.rotationQuaternion, b.position);
                     hitTest.transformationMatrix.decompose(undefined, marker.rotationQuaternion, marker.position);
                 } else {
-                    b.isVisible = false;
+                    //b.isVisible = false;
                     marker.isVisible = false;
                     hitTest = undefined;
                 }
@@ -178,17 +183,47 @@
             const mat2 = new BABYLON.StandardMaterial('1', scene);
             mat2.diffuseColor = BABYLON.Color3.Blue();
 
+            var obj = null;
+
+            const tn = new BABYLON.TransformNode("tn", scene);
+
             if (anchors) {
                 console.log('anchors attached');
                 anchors.onAnchorAddedObservable.add(anchor => {
                     console.log('attaching', anchor);
-                    b.isVisible = true;
-                    anchor.attachedNode = b.clone("mensch");
+                    //b.isVisible = true;
 
-                    anchor.attachedNode.skeleton = skeleton.clone('skelet');
-                    shadowGenerator.addShadowCaster(anchor.attachedNode, true);
+                    const mesh = b.clone("mensClone");
+                    
+                    mesh.parent = tn;
+
+                    mesh.scaling = new BABYLON.Vector3(1, 1, 1);
+
+                    anchor.attachedNode = tn;
+                    //anchor.attachedNode.skeleton = skeleton.clone('skelet');
+                    //shadowGenerator.addShadowCaster(anchor.attachedNode, true);
+
+                    console.log("before : " + b.rotation);
+                    console.log("before : " + anchor.attachedNode.rotation);
+
+                    //var beta = Math.random() * 1.3 * Math.PI;
+                    //tn.rotate(BABYLON.Axis.Y, beta, BABYLON.Space.WORLD);
+
+                    //var earthAxis = new BABYLON.Vector3(Math.sin(23 * Math.PI/180), Math.cos(23 * Math.PI/180), 0);
+                    //b.rotate( earthAxis, 1, BABYLON.Space.WORLD );
+                    //anchor.attachedNode.rotate( earthAxis, 1, BABYLON.Space.WORLD );
+                    //hitTest.transformationMatrix.decompose(undefined, b.rotationQuaternion, b.position);
+
+                    console.log("after : " + b.rotation);
+                    console.log("after : " + anchor.attachedNode.rotation);
+
+                    console.log(b);
+                    console.log(anchor.attachedNode);
+
+
+
                     //scene.beginAnimation(anchor.attachedNode.skeleton, idleRange.from, idleRange.to, true);
-                    b.isVisible = false;
+                    //b.isVisible = false;
                 })
 
                 anchors.onAnchorRemovedObservable.add(anchor => {
@@ -205,6 +240,23 @@
                     anchors.addAnchorPointUsingHitTestResultAsync(hitTest);
                 }
             }
+
+            var angle = 0;
+            scene.registerBeforeRender(function () {
+
+                let robotClone = scene.getMeshByName( 'mensClone' );
+
+                if (robotClone) {
+
+                    var earthAxis = new BABYLON.Vector3(0, 1, 0);
+                    robotClone.rotate( earthAxis, 0.01, BABYLON.Space.WORLD );
+                    angle += 0.01;
+                }
+                else{
+                    console.log("no mensClone");
+                }
+
+            });
 
             const planes = [];
 
