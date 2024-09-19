@@ -193,11 +193,11 @@
                     console.log('attaching', anchor);
                     //b.isVisible = true;
 
-                    const mesh = b.clone("mensClone");
+                    //const mesh = b.clone("mensClone");
                     
-                    mesh.parent = tn;
+                    b.parent = tn;
 
-                    mesh.scaling = new BABYLON.Vector3(1, 1, 1);
+                    b.scaling = new BABYLON.Vector3(1, 1, 1);
 
                     anchor.attachedNode = tn;
                     //anchor.attachedNode.skeleton = skeleton.clone('skelet');
@@ -246,10 +246,10 @@
 
                 let robotClone = scene.getMeshByName( 'mensClone' );
 
-                if (robotClone) {
+                if (b) {
 
                     var earthAxis = new BABYLON.Vector3(0, 1, 0);
-                    robotClone.rotate( earthAxis, 0.01, BABYLON.Space.WORLD );
+                    b.rotate( earthAxis, 0.01, BABYLON.Space.WORLD );
                     angle += 0.01;
                 }
                 else{
