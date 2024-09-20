@@ -322,6 +322,9 @@
 
             const meshDetector = fm.enableFeature(BABYLON.WebXRMeshDetector.Name, "latest");
             
+            //https://immersive-web.github.io/webxr-samples/proposals/mesh-detection.html
+            //官方文档的可以定位
+
             // 监听网格添加事件
             meshDetector.onMeshAddedObservable.add((mesh) => {
                 // 对新检测到的网格进行处理
