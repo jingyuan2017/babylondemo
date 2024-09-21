@@ -265,8 +265,6 @@
                 
                 console.log("New plane added:", plane);
 
-                console.log("New plane added:", JSON.stringify(plane, null, 2));
-
 
                 plane.polygonDefinition.push(plane.polygonDefinition[0]);
                 var polygon_triangulation = new BABYLON.PolygonMeshBuilder("name", plane.polygonDefinition.map((p) => new BABYLON.Vector2(p.x, p.z)), scene);
@@ -318,21 +316,25 @@
                 planes.forEach(plane => plane.dispose());
                 while (planes.pop()) { };
             });
+
+
+            const meshDetectorOptions = {
+                convertCoordinateSystems: true, // 设置为 true 以转换坐标系
+                //TransformNode: true, // 设置为 true 以将转换后的坐标系附加到 XRInputSource 的节点上
+                // ... 可以设置其他选项
+            };
             
 
-            const meshDetector = fm.enableFeature(BABYLON.WebXRMeshDetector.Name, "latest");
+            const meshDetector = fm.enableFeature(BABYLON.WebXRMeshDetector.Name , "latest" , meshDetectorOptions);
+            
             
             //https://immersive-web.github.io/webxr-samples/proposals/mesh-detection.html
             //官方文档的可以定位
 
-            // 监听网格添加事件
-            meshDetector.onMeshAddedObservable.add((mesh) => {
-                // 对新检测到的网格进行处理
-                console.log("New mesh added:", mesh);
 
-                console.log("New mesh added:", JSON.stringify(mesh, null, 2));
+            meshDetector.onMeshUpdatedObservable.add((mesh) => {
+                console.log("mesh updated:", mesh);
 
-                
                 // 提取顶点和索引
                 const vertices = Object.values(mesh.xrMesh._vertices);
                 const indices = Object.values(mesh.xrMesh._indices);
@@ -346,7 +348,7 @@
                 vertexData.indices = indices;
 
                 // 应用数据到 mesh
-                //vertexData.applyToMesh(customMesh, true);
+                vertexData.applyToMesh(customMesh, true);
 
                 // 设置材质
                 //const material = new BABYLON.StandardMaterial("meshMaterial", scene);
@@ -382,6 +384,91 @@
                 const lines = BABYLON.MeshBuilder.CreateLines("lines", { points: linePoints }, scene);
                 lines.color = new BABYLON.Color3(1, 1, 1); // 白色
 
+            });
+
+
+            // 监听网格添加事件
+            meshDetector.onMeshAddedObservable.add((mesh) => {
+                // 对新检测到的网格进行处理
+                console.log("New mesh added:", mesh);
+
+                
+                // 提取顶点和索引
+                const vertices = Object.values(mesh.xrMesh._vertices);
+                const indices = Object.values(mesh.xrMesh._indices);
+
+                // 创建自定义的 mesh
+                const customMesh = new BABYLON.Mesh("customMesh", scene);
+
+                // 设置顶点数据
+                const vertexData = new BABYLON.VertexData();
+                vertexData.positions = vertices;
+                vertexData.indices = indices;
+
+                // 应用数据到 mesh
+                //vertexData.applyToMesh(customMesh, true);
+
+                // 设置材质
+                //const material = new BABYLON.StandardMaterial("meshMaterial", scene);
+                //material.diffuseColor = new BABYLON.Color3(0.5, 0.5, 0.5); // 设置颜色
+                //customMesh.material = material;
+
+                // 设置位置（可选）
+                //customMesh.position.y = 0; // 根据需要调整位置
+
+
+                // 渲染顶点为小圆点
+                vertices.forEach((value, index) => {
+                    if (index % 3 === 0) { // 每三个值为一个顶点
+                        const sphere = BABYLON.MeshBuilder.CreateSphere("vertex" + index, { diameter: 0.05 }, scene);
+                        sphere.position.set(value, vertices[index + 1], vertices[index + 2]);
+                        sphere.material = new BABYLON.StandardMaterial("vertexMaterial", scene);
+                        sphere.material.diffuseColor = new BABYLON.Color3(1, 1, 1); // 白色
+                        sphere.parent = customMesh;
+                    }
+                });
+
+                // 渲染线条
+                const linePoints = [];
+                for (let i = 0; i < indices.length; i += 3) {
+                    linePoints.push(
+                        new BABYLON.Vector3(vertices[indices[i] * 3], vertices[indices[i] * 3 + 1], vertices[indices[i] * 3 + 2]),
+                        new BABYLON.Vector3(vertices[indices[i + 1] * 3], vertices[indices[i + 1] * 3 + 1], vertices[indices[i + 1] * 3 + 2]),
+                        new BABYLON.Vector3(vertices[indices[i + 2] * 3], vertices[indices[i + 2] * 3 + 1], vertices[indices[i + 2] * 3 + 2])
+                    );
+                }
+
+                // 创建线条
+                const lines = BABYLON.MeshBuilder.CreateLines("lines", { points: linePoints }, scene);
+                lines.color = new BABYLON.Color3(1, 1, 1); // 白色
+
+                lines.parent = customMesh;
+
+
+                if (mesh.xrMesh && mesh.transformationMatrix) {
+                    const matrix = mesh.transformationMatrix;
+                    const scaling = new BABYLON.Vector3();
+                    const rotationQuaternion = new BABYLON.Quaternion();
+                    const position = new BABYLON.Vector3();
+                    matrix.decompose(scaling, rotationQuaternion, position);
+
+                    console.log(position);
+                    console.log(scaling);
+                    console.log(rotationQuaternion);
+
+                    // 应用这些值到你自定义的 mesh
+                    customMesh.position = position;
+                    customMesh.scaling = scaling;
+                    customMesh.rotationQuaternion = rotationQuaternion;
+
+                    //customMesh.setPreTransformMatrix(mesh.transformationMatrix);
+                    //customMesh.computeWorldMatrix(true);
+
+
+
+                } else {
+                    console.log("mesh.xrMesh or transformationMatrix is undefined");
+                }
 
 
             });
