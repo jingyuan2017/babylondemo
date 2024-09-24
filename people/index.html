@@ -48,7 +48,6 @@
 </head>
 
 <body>
-    1111111111111111111111111
     <div id="canvasZone"><canvas id="renderCanvas"></canvas></div>
     <script>
         var canvas = document.getElementById("renderCanvas");
@@ -349,8 +348,8 @@
                 console.log("mesh updated:", mesh);
 
                 // 提取顶点和索引
-                const vertices = Object.values(mesh.xrMesh._vertices);
-                const indices = Object.values(mesh.xrMesh._indices);
+                const vertices = Object.values(mesh.xrMesh.vertices);
+                const indices = Object.values(mesh.xrMesh.indices);
 
                 // 创建自定义的 mesh
                 const customMesh = new BABYLON.Mesh("customMesh", scene);
@@ -402,6 +401,19 @@
 
             // 监听网格添加事件
             meshDetector.onMeshAddedObservable.add((mesh) => {
+
+                if (typeof mesh.xrMesh.semanticLabel === "undefined") {
+                    textBlock.text = textBlock.text + "[]";
+                }else{
+                    textBlock.text = textBlock.text + "[" + mesh.xrMesh.semanticLabel + "]";
+                }
+
+
+                if(mesh.xrMesh.semanticLabel != "table" && mesh.xrMesh.semanticLabel != "bed" && mesh.xrMesh.semanticLabel != "shelf" && mesh.xrMesh.semanticLabel != "lamp"){
+                    console.log("name : " + mesh.xrMesh.semanticLabel);
+                    return;
+                }
+
                 // 对新检测到的网格进行处理
                 console.log("mesh added:", mesh);
 
@@ -412,24 +424,20 @@
                 const meshJson = JSON.stringify(keys, null, 2);
 
                 //textBlock.text = textBlock.text + "[" +mesh.xrMesh.semanticLabel + "] | " + meshJson + "\n";
-                
-
-                if (typeof mesh.xrMesh.semanticLabel === "undefined") {
-                    textBlock.text = textBlock.text + "[]";
-                }else{
-                    textBlock.text = textBlock.text + "[" + mesh.xrMesh.semanticLabel + "]";
-                }
+            
 
 
                 console.log(meshJson);
 
 
-                // 提取顶点和索引
-                const vertices = Object.values(mesh.xrMesh._vertices);
-                const indices = Object.values(mesh.xrMesh._indices);
-
                 // 创建自定义的 mesh
                 const customMesh = new BABYLON.Mesh("customMesh", scene);
+
+
+
+                // 提取顶点和索引
+                const vertices = Object.values(mesh.xrMesh.vertices);
+                const indices = Object.values(mesh.xrMesh.indices);
 
                 // 设置顶点数据
                 const vertexData = new BABYLON.VertexData();
@@ -474,7 +482,7 @@
                 lines.color = new BABYLON.Color3(1, 1, 1); // 白色
 
                 lines.parent = customMesh;
-
+        
 
                 if (mesh.xrMesh && mesh.transformationMatrix) {
                     const matrix = mesh.transformationMatrix;
