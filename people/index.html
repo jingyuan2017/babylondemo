@@ -108,16 +108,16 @@
             var xr = await scene.createDefaultXRExperienceAsync({
                 uiOptions: {
                     sessionMode: "immersive-ar",
-                    referenceSpaceType: "local-floor"
+                    //referenceSpaceType: "local-floor"
                 },
-                optionalFeatures: true
+                //optionalFeatures: true
             });
 
             const fm = xr.baseExperience.featuresManager;
 
             const xrTest = fm.enableFeature(BABYLON.WebXRHitTest.Name, "latest");
             const xrPlanes = fm.enableFeature(BABYLON.WebXRPlaneDetector.Name, "latest");
-            const anchors = fm.enableFeature(BABYLON.WebXRAnchorSystem.Name, 'latest');
+            //const anchors = fm.enableFeature(BABYLON.WebXRAnchorSystem.Name, 'latest');
 
             const xrBackgroundRemover = fm.enableFeature(BABYLON.WebXRBackgroundRemover.Name);
 
@@ -164,7 +164,7 @@
 
 
 
-
+            /*
             xrTest.onHitTestResultObservable.add((results) => {
                 if (results.length) {
                     marker.isVisible = true;
@@ -178,6 +178,8 @@
                     hitTest = undefined;
                 }
             });
+            */
+
             const mat1 = new BABYLON.StandardMaterial('1', scene);
             mat1.diffuseColor = BABYLON.Color3.Red();
             const mat2 = new BABYLON.StandardMaterial('1', scene);
@@ -187,6 +189,7 @@
 
             const tn = new BABYLON.TransformNode("tn", scene);
 
+            /*
             if (anchors) {
                 console.log('anchors attached');
                 anchors.onAnchorAddedObservable.add(anchor => {
@@ -235,10 +238,14 @@
                 });
             }
 
+            */
+
             scene.onPointerDown = (evt, pickInfo) => {
+                /*
                 if (hitTest && anchors && xr.baseExperience.state === BABYLON.WebXRState.IN_XR) {
                     anchors.addAnchorPointUsingHitTestResultAsync(hitTest);
                 }
+                */
             }
 
             var angle = 0;
@@ -273,7 +280,7 @@
 
                 if (typeof plane.xrPlane.semanticLabel === "undefined") {
                     textBlock.text = textBlock.text + "[]";
-                }else{
+                } else {
                     textBlock.text = textBlock.text + "[" + plane.xrPlane.semanticLabel + "]";
                 }
 
@@ -332,8 +339,6 @@
 
             const meshDetectorOptions = {
                 convertCoordinateSystems: true, // 设置为 true 以转换坐标系
-                //TransformNode: true, // 设置为 true 以将转换后的坐标系附加到 XRInputSource 的节点上
-                // ... 可以设置其他选项
             };
 
 
@@ -344,57 +349,15 @@
             //官方文档的可以定位
 
 
+            meshDetector.onMeshRemovedObservable.add((mesh) => {
+                
+                console.log("mesh removed:", mesh);
+            
+            });
+
             meshDetector.onMeshUpdatedObservable.add((mesh) => {
+                
                 console.log("mesh updated:", mesh);
-
-                // 提取顶点和索引
-                const vertices = Object.values(mesh.xrMesh.vertices);
-                const indices = Object.values(mesh.xrMesh.indices);
-
-                // 创建自定义的 mesh
-                const customMesh = new BABYLON.Mesh("customMesh", scene);
-
-                // 设置顶点数据
-                const vertexData = new BABYLON.VertexData();
-                vertexData.positions = vertices;
-                vertexData.indices = indices;
-
-                // 应用数据到 mesh
-                vertexData.applyToMesh(customMesh, true);
-
-                // 设置材质
-                //const material = new BABYLON.StandardMaterial("meshMaterial", scene);
-                //material.diffuseColor = new BABYLON.Color3(0.5, 0.5, 0.5); // 设置颜色
-                //customMesh.material = material;
-
-                // 设置位置（可选）
-                //customMesh.position.y = 0; // 根据需要调整位置
-
-
-
-                // 渲染顶点为小圆点
-                vertices.forEach((value, index) => {
-                    if (index % 3 === 0) { // 每三个值为一个顶点
-                        const sphere = BABYLON.MeshBuilder.CreateSphere("vertex" + index, { diameter: 0.05 }, scene);
-                        sphere.position.set(value, vertices[index + 1], vertices[index + 2]);
-                        sphere.material = new BABYLON.StandardMaterial("vertexMaterial", scene);
-                        sphere.material.diffuseColor = new BABYLON.Color3(1, 1, 1); // 白色
-                    }
-                });
-
-                // 渲染线条
-                const linePoints = [];
-                for (let i = 0; i < indices.length; i += 3) {
-                    linePoints.push(
-                        new BABYLON.Vector3(vertices[indices[i] * 3], vertices[indices[i] * 3 + 1], vertices[indices[i] * 3 + 2]),
-                        new BABYLON.Vector3(vertices[indices[i + 1] * 3], vertices[indices[i + 1] * 3 + 1], vertices[indices[i + 1] * 3 + 2]),
-                        new BABYLON.Vector3(vertices[indices[i + 2] * 3], vertices[indices[i + 2] * 3 + 1], vertices[indices[i + 2] * 3 + 2])
-                    );
-                }
-
-                // 创建线条
-                const lines = BABYLON.MeshBuilder.CreateLines("lines", { points: linePoints }, scene);
-                lines.color = new BABYLON.Color3(1, 1, 1); // 白色
 
             });
 
@@ -404,12 +367,12 @@
 
                 if (typeof mesh.xrMesh.semanticLabel === "undefined") {
                     textBlock.text = textBlock.text + "[]";
-                }else{
+                } else {
                     textBlock.text = textBlock.text + "[" + mesh.xrMesh.semanticLabel + "]";
                 }
 
 
-                if(mesh.xrMesh.semanticLabel != "table" && mesh.xrMesh.semanticLabel != "bed" && mesh.xrMesh.semanticLabel != "shelf" && mesh.xrMesh.semanticLabel != "lamp"){
+                if (mesh.xrMesh.semanticLabel == "global mesh") {
                     console.log("name : " + mesh.xrMesh.semanticLabel);
                     return;
                 }
@@ -424,7 +387,7 @@
                 const meshJson = JSON.stringify(keys, null, 2);
 
                 //textBlock.text = textBlock.text + "[" +mesh.xrMesh.semanticLabel + "] | " + meshJson + "\n";
-            
+
 
 
                 console.log(meshJson);
@@ -433,7 +396,19 @@
                 // 创建自定义的 mesh
                 const customMesh = new BABYLON.Mesh("customMesh", scene);
 
+                customMesh.rotationQuaternion = new BABYLON.Quaternion();
+                customMesh.setVerticesData(BABYLON.VertexBuffer.PositionKind, mesh.positions);
 
+                if (mesh.normals) {
+                    customMesh.setVerticesData(BABYLON.VertexBuffer.NormalKind, mesh.normals);
+                } else {
+                    customMesh.createNormals(true);
+                }
+
+                customMesh.setIndices(mesh.indices, undefined, true);
+
+
+                /*
 
                 // 提取顶点和索引
                 const vertices = Object.values(mesh.xrMesh.vertices);
@@ -483,6 +458,8 @@
 
                 lines.parent = customMesh;
         
+                */
+
 
                 if (mesh.xrMesh && mesh.transformationMatrix) {
                     const matrix = mesh.transformationMatrix;
@@ -514,6 +491,7 @@
 
 
 
+
             //添加文字面板
 
             // 创建一个平面
@@ -523,7 +501,7 @@
             const planeMaterial = new BABYLON.StandardMaterial("planeMaterial", scene);
             planeMaterial.diffuseColor = new BABYLON.Color3(0.3, 0.3, 0.8); // 深蓝色
             plane.material = planeMaterial;
-            plane.background = "darkblue"; 
+            plane.background = "darkblue";
 
 
 
