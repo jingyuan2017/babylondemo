@@ -159,11 +159,14 @@
 
 
             scene.onPointerDown = (evt, pickInfo) => {
-                console.log(evt);
+                //console.log(evt);
                 console.log(pickInfo);
 
-                console.log(b.position);
-                console.log(pickInfo.pickedPoint);
+                //console.log("src position : " , b.position);
+                console.log("pickedPoint : " , pickInfo.pickedPoint);
+
+                //打印光标位置法线，用于确认是否水平面
+                console.log("normal : " , pickInfo.getNormal().normalize());
 
                 b.position = pickInfo.pickedPoint;
             }
@@ -319,13 +322,20 @@
                 customMesh.rotationQuaternion = new BABYLON.Quaternion();
                 customMesh.setVerticesData(BABYLON.VertexBuffer.PositionKind, mesh.positions);
 
+                customMesh.setIndices(mesh.indices, undefined, true);
+
+                console.log("mesh.normals :" , mesh.normals);
+                
                 if (mesh.normals) {
+                    console.log("normals data found");
                     customMesh.setVerticesData(BABYLON.VertexBuffer.NormalKind, mesh.normals);
                 } else {
+                    console.log("no normals data");
                     customMesh.createNormals(true);
                 }
 
-                customMesh.setIndices(mesh.indices, undefined, true);
+                //打印新创建的法线数据
+                console.log("customMesh.normals :" , customMesh.getVerticesData(BABYLON.VertexBuffer.NormalKind));
 
 
                 if (mesh.xrMesh && mesh.transformationMatrix) {
