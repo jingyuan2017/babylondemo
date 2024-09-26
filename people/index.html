@@ -108,7 +108,7 @@
             var xr = await scene.createDefaultXRExperienceAsync({
                 uiOptions: {
                     sessionMode: "immersive-ar",
-                    //referenceSpaceType: "local-floor"
+                    referenceSpaceType: "local-floor"
                 },
                 //optionalFeatures: true
             });
@@ -162,13 +162,19 @@
                 //console.log(evt);
                 console.log(pickInfo);
 
-                //console.log("src position : " , b.position);
-                console.log("pickedPoint : " , pickInfo.pickedPoint);
+                if (pickInfo.pickedPoint) {
+                    //console.log("src position : " , b.position);
+                    console.log("pickedPoint : ", pickInfo.pickedPoint);
 
-                //打印光标位置法线，用于确认是否水平面
-                console.log("normal : " , pickInfo.getNormal().normalize());
+                    if(pickInfo.getNormal()){
+                        //打印光标位置法线，用于确认是否水平面
+                        console.log("normal : ", pickInfo.getNormal().normalize());
+                    }
 
-                b.position = pickInfo.pickedPoint;
+                    b.position = pickInfo.pickedPoint;
+                }else{
+                    console.log("pickPoint is null");
+                }
             }
 
             var angle = 0;
@@ -201,11 +207,7 @@
 
                 const meshJson = JSON.stringify(keys, null, 2);
 
-                if (typeof plane.xrPlane.semanticLabel === "undefined") {
-                    textBlock.text = textBlock.text + "[]";
-                } else {
-                    textBlock.text = textBlock.text + "[" + plane.xrPlane.semanticLabel + "]";
-                }
+                textBlock.text = textBlock.text + "[" + plane.xrPlane.semanticLabel + "]";
 
 
                 plane.polygonDefinition.push(plane.polygonDefinition[0]);
@@ -215,7 +217,7 @@
                 //}
                 planes[plane.id] = (plane.mesh);
                 const mat = new BABYLON.StandardMaterial("mat", scene);
-                mat.alpha = 0.5;
+                mat.alpha = 0.1;
                 mat.diffuseColor = BABYLON.Color3.Random();
                 polygon.createNormals();
                 // polygon.receiveShadows = true;
@@ -226,6 +228,10 @@
             });
 
             xrPlanes.onPlaneUpdatedObservable.add(plane => {
+
+                console.log("plane update" , plane);
+                console.log("name : " + plane.xrPlane.semanticLabel);
+
                 let mat;
                 if (plane.mesh) {
                     mat = plane.mesh.material;
@@ -249,6 +255,10 @@
             })
 
             xrPlanes.onPlaneRemovedObservable.add(plane => {
+
+                console.log("plane remove" , plane);
+                console.log("name : " + plane.xrPlane.semanticLabel);
+
                 if (plane && planes[plane.id]) {
                     planes[plane.id].dispose()
                 }
@@ -273,13 +283,13 @@
 
 
             meshDetector.onMeshRemovedObservable.add((mesh) => {
-                
+
                 console.log("mesh removed:", mesh);
-            
+
             });
 
             meshDetector.onMeshUpdatedObservable.add((mesh) => {
-                
+
                 console.log("mesh updated:", mesh);
 
             });
@@ -324,8 +334,8 @@
 
                 customMesh.setIndices(mesh.indices, undefined, true);
 
-                console.log("mesh.normals :" , mesh.normals);
-                
+                console.log("mesh.normals :", mesh.normals);
+
                 if (mesh.normals) {
                     console.log("normals data found");
                     customMesh.setVerticesData(BABYLON.VertexBuffer.NormalKind, mesh.normals);
@@ -335,7 +345,12 @@
                 }
 
                 //打印新创建的法线数据
-                console.log("customMesh.normals :" , customMesh.getVerticesData(BABYLON.VertexBuffer.NormalKind));
+                console.log("customMesh.normals :", customMesh.getVerticesData(BABYLON.VertexBuffer.NormalKind));
+
+
+                const customMaterial = new BABYLON.StandardMaterial("customMaterial", scene);
+                customMaterial.alpha = 0.1;
+                customMesh.material = customMaterial;
 
 
                 if (mesh.xrMesh && mesh.transformationMatrix) {
@@ -372,7 +387,7 @@
             //添加文字面板
 
             // 创建一个平面
-            const plane = BABYLON.MeshBuilder.CreatePlane("textPlane", { width: 3, height: 2 }, scene);
+            const plane = BABYLON.MeshBuilder.CreatePlane("textPlane", { width: 1.5, height: 1 }, scene);
 
             // 创建一个材质，设置深蓝色背景
             const planeMaterial = new BABYLON.StandardMaterial("planeMaterial", scene);
@@ -389,7 +404,7 @@
             const textBlock = new BABYLON.GUI.TextBlock();
             textBlock.text = ":"; // 显示的白色文字
             textBlock.color = "white"; // 文字颜色为白色
-            textBlock.fontSize = 36; // 字体大小
+            textBlock.fontSize = 24; // 字体大小
             textBlock.textWrapping = true; // 启用自动换行
             textBlock.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
             textBlock.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
