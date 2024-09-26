@@ -60,6 +60,7 @@
             });
         }
 
+
         var engine = null;
         var scene = null;
         var sceneToRender = null;
@@ -78,6 +79,10 @@
 
             // This creates a basic Babylon Scene object (non-mesh)
             var scene = new BABYLON.Scene(engine);
+
+            scene.debugLayer.show({
+                initialTab: 1
+            });
 
             // This creates and positions a free camera (non-mesh)
             var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 1, -5), scene);
@@ -102,6 +107,10 @@
             shadowGenerator.blurKernel = 32;
 
             const model = await BABYLON.SceneLoader.ImportMeshAsync("", "https://ai.58auv.com/models/", "threejs_vrm_sample.glb", scene);
+
+            //const model = await BABYLON.SceneLoader.ImportMeshAsync("", "https://ai.58auv.com/models/", "triple_2.glb", scene);
+
+            //const model = await BABYLON.SceneLoader.ImportMeshAsync("", "https://ai.58auv.com/models/", "vroid1.glb", scene);
 
             //const model = await BABYLON.SceneLoader.ImportMeshAsync("", "/models/", "dummy3.babylon", scene);
 
@@ -145,7 +154,7 @@
             let hitTest;
 
             //b.isVisible = false;
-            b.scaling = new BABYLON.Vector3(0.5, 0.5, 0.5);
+            b.scaling = new BABYLON.Vector3(1, 1, 1);
 
 
             const mat1 = new BABYLON.StandardMaterial('1', scene);
@@ -166,13 +175,13 @@
                     //console.log("src position : " , b.position);
                     console.log("pickedPoint : ", pickInfo.pickedPoint);
 
-                    if(pickInfo.getNormal()){
+                    if (pickInfo.getNormal()) {
                         //打印光标位置法线，用于确认是否水平面
                         console.log("normal : ", pickInfo.getNormal().normalize());
                     }
 
                     b.position = pickInfo.pickedPoint;
-                }else{
+                } else {
                     console.log("pickPoint is null");
                 }
             }
@@ -229,7 +238,7 @@
 
             xrPlanes.onPlaneUpdatedObservable.add(plane => {
 
-                console.log("plane update" , plane);
+                console.log("plane update", plane);
                 console.log("name : " + plane.xrPlane.semanticLabel);
 
                 let mat;
@@ -256,7 +265,7 @@
 
             xrPlanes.onPlaneRemovedObservable.add(plane => {
 
-                console.log("plane remove" , plane);
+                console.log("plane remove", plane);
                 console.log("name : " + plane.xrPlane.semanticLabel);
 
                 if (plane && planes[plane.id]) {
