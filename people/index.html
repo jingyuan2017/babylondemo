@@ -80,9 +80,9 @@
             // This creates a basic Babylon Scene object (non-mesh)
             var scene = new BABYLON.Scene(engine);
 
-            scene.debugLayer.show({
-                initialTab: 1
-            });
+            //scene.debugLayer.show({
+            //    initialTab: 1
+            //});
 
             // This creates and positions a free camera (non-mesh)
             var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 1, -5), scene);
@@ -106,9 +106,9 @@
             shadowGenerator.useBlurExponentialShadowMap = true;
             shadowGenerator.blurKernel = 32;
 
-            const model = await BABYLON.SceneLoader.ImportMeshAsync("", "https://ai.58auv.com/models/", "threejs_vrm_sample.glb", scene);
+            //const model = await BABYLON.SceneLoader.ImportMeshAsync("", "https://ai.58auv.com/models/", "threejs_vrm_sample.glb", scene);
 
-            //const model = await BABYLON.SceneLoader.ImportMeshAsync("", "https://ai.58auv.com/models/", "triple_2.glb", scene);
+            const model = await BABYLON.SceneLoader.ImportMeshAsync("", "https://ai.58auv.com/models/", "mixamo.glb", scene);
 
             //const model = await BABYLON.SceneLoader.ImportMeshAsync("", "https://ai.58auv.com/models/", "vroid1.glb", scene);
 
