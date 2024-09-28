@@ -167,7 +167,6 @@
 
             const tn = new BABYLON.TransformNode("tn", scene);
 
-
             scene.onPointerDown = (evt, pickInfo) => {
                 //console.log(evt);
                 console.log(pickInfo);
@@ -294,13 +293,77 @@
 
             meshDetector.onMeshRemovedObservable.add((mesh) => {
 
-                console.log("mesh removed:", mesh);
+                //console.log("mesh removed:", mesh);
+
+                console.log("remove mesh id : " + 'customMesh_' + mesh.id);
+
+                let meshTemp = scene.getMeshByName('customMesh_' + mesh.id);
+
+                if(meshTemp){
+                    meshTemp.dispose();
+                }
 
             });
 
             meshDetector.onMeshUpdatedObservable.add((mesh) => {
 
                 console.log("mesh updated:", mesh);
+
+                // 查找已存在的自定义 mesh
+                const customMesh = scene.getMeshByName('customMesh_' + mesh.id);
+
+                if(!customMesh){
+                    console.log("没有找到mesh，不更新");
+                    return;
+                }
+
+                customMesh.setVerticesData(BABYLON.VertexBuffer.PositionKind, mesh.positions);
+
+                customMesh.setIndices(mesh.indices, undefined, true);
+
+                console.log("mesh.normals :", mesh.normals);
+
+                if (mesh.normals) {
+                    console.log("normals data found");
+                    customMesh.setVerticesData(BABYLON.VertexBuffer.NormalKind, mesh.normals);
+                } else {
+                    console.log("no normals data");
+                    customMesh.createNormals(true);
+                }
+
+                //打印新创建的法线数据
+                console.log("customMesh.normals :", customMesh.getVerticesData(BABYLON.VertexBuffer.NormalKind));
+
+
+                //const customMaterial = new BABYLON.StandardMaterial("customMaterial", scene);
+                //customMaterial.alpha = 0.1;
+                //customMesh.material = customMaterial;
+
+
+                if (mesh.xrMesh && mesh.transformationMatrix) {
+                    const matrix = mesh.transformationMatrix;
+                    const scaling = new BABYLON.Vector3();
+                    const rotationQuaternion = new BABYLON.Quaternion();
+                    const position = new BABYLON.Vector3();
+                    matrix.decompose(scaling, rotationQuaternion, position);
+
+                    console.log(position);
+                    console.log(scaling);
+                    console.log(rotationQuaternion);
+
+                    // 应用这些值到你自定义的 mesh
+                    customMesh.position = position;
+                    customMesh.scaling = scaling;
+                    customMesh.rotationQuaternion = rotationQuaternion;
+
+                    //customMesh.setPreTransformMatrix(mesh.transformationMatrix);
+                    //customMesh.computeWorldMatrix(true);
+
+
+
+                } else {
+                    console.log("mesh.xrMesh or transformationMatrix is undefined");
+                }
 
             });
 
@@ -314,7 +377,6 @@
                     textBlock.text = textBlock.text + "[" + mesh.xrMesh.semanticLabel + "]";
                 }
 
-
                 if (mesh.xrMesh.semanticLabel == "global mesh") {
                     console.log("name : " + mesh.xrMesh.semanticLabel);
                     return;
@@ -327,17 +389,13 @@
 
                 const keys = Object.keys(mesh);
 
-                const meshJson = JSON.stringify(keys, null, 2);
-
+                //const meshJson = JSON.stringify(keys, null, 2);
                 //textBlock.text = textBlock.text + "[" +mesh.xrMesh.semanticLabel + "] | " + meshJson + "\n";
-
-
-
-                console.log(meshJson);
+                //console.log(meshJson);
 
 
                 // 创建自定义的 mesh
-                const customMesh = new BABYLON.Mesh("customMesh", scene);
+                const customMesh = new BABYLON.Mesh("customMesh_" + mesh.id, scene);
 
                 customMesh.rotationQuaternion = new BABYLON.Quaternion();
                 customMesh.setVerticesData(BABYLON.VertexBuffer.PositionKind, mesh.positions);
