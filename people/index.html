@@ -106,9 +106,9 @@
             shadowGenerator.useBlurExponentialShadowMap = true;
             shadowGenerator.blurKernel = 32;
 
-            //const model = await BABYLON.SceneLoader.ImportMeshAsync("", "https://ai.58auv.com/models/", "threejs_vrm_sample.glb", scene);
+            const model = await BABYLON.SceneLoader.ImportMeshAsync("", "https://ai.58auv.com/models/", "threejs_vrm_sample.glb", scene);
 
-            const model = await BABYLON.SceneLoader.ImportMeshAsync("", "https://ai.58auv.com/models/", "mixamo.glb", scene);
+            //const model = await BABYLON.SceneLoader.ImportMeshAsync("", "https://ai.58auv.com/models/", "mixamo.glb", scene);
 
             //const model = await BABYLON.SceneLoader.ImportMeshAsync("", "https://ai.58auv.com/models/", "vroid1.glb", scene);
 
@@ -119,16 +119,17 @@
                     sessionMode: "immersive-ar",
                     referenceSpaceType: "local-floor"
                 },
+                disableTeleportation: true, //禁用传送功能
                 //optionalFeatures: true
             });
 
             const fm = xr.baseExperience.featuresManager;
 
-            const xrTest = fm.enableFeature(BABYLON.WebXRHitTest.Name, "latest");
+            //const xrTest = fm.enableFeature(BABYLON.WebXRHitTest.Name, "latest");
             const xrPlanes = fm.enableFeature(BABYLON.WebXRPlaneDetector.Name, "latest");
             //const anchors = fm.enableFeature(BABYLON.WebXRAnchorSystem.Name, 'latest');
+            //const xrBackgroundRemover = fm.enableFeature(BABYLON.WebXRBackgroundRemover.Name);
 
-            const xrBackgroundRemover = fm.enableFeature(BABYLON.WebXRBackgroundRemover.Name);
 
             console.log(model.meshes);
 
