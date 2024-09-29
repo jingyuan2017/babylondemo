@@ -130,7 +130,6 @@
             //const anchors = fm.enableFeature(BABYLON.WebXRAnchorSystem.Name, 'latest');
             //const xrBackgroundRemover = fm.enableFeature(BABYLON.WebXRBackgroundRemover.Name);
 
-
             console.log(model.meshes);
 
             let b = model.meshes[0];//BABYLON.CylinderBuilder.CreateCylinder('cylinder', { diameterBottom: 0.2, diameterTop: 0.4, height: 0.5 });
@@ -138,8 +137,55 @@
 
             console.log("before : " + b.rotation);
 
+
+
+
+            //处理手柄旋转事件
+            xr.input.onControllerAddedObservable.add((controller) => {
+                controller.onMotionControllerInitObservable.add((motionController) => {
+
+                    //处理右手手柄
+                    if (motionController.handness === 'right') {
+                        const xr_ids = motionController.getComponentIds();
+
+                        //获取摇杆动作
+                        let thumbstickComponent = motionController.getComponent(xr_ids[2]);//xr-standard-thumbstick
+                        //只处理摇杆晃动，不处理按下
+                        thumbstickComponent.onAxisValueChangedObservable.add((axes) => {
+
+                            if(axes.x == 0 && axes.y == 0){
+                                return;
+                            }
+
+                            console.log(axes);
+
+                            let angle = Math.atan2(-axes.y, axes.x); // 计算旋转角度（弧度）
+
+                            angle = angle - Math.PI / 2;
+
+                            if (angle < 0) {
+                                angle = Math.PI * 2 + angle;
+                            }
+                            console.log(angle);
+
+                            console.log(b.rotation);
+
+                            b.rotation = new BABYLON.Vector3(0, -angle, 0);
+                            console.log("After rotation: " + b.rotation);
+
+                        });
+
+                    };
+
+                });
+            });
+
+
+
+
             var beta = Math.random() * 2 * Math.PI;
             b.rotate(BABYLON.Axis.Y, beta, BABYLON.Space.WORLD);
+
 
             console.log("after : " + b.rotation);
 
@@ -189,17 +235,27 @@
             var angle = 0;
             scene.registerBeforeRender(function () {
 
-                let robotClone = scene.getMeshByName('mensClone');
+                //let robotClone = scene.getMeshByName('mensClone');
 
+
+                //屏蔽了模型自旋转，改为手柄控制
+                /*
                 if (b) {
 
                     var earthAxis = new BABYLON.Vector3(0, 1, 0);
                     b.rotate(earthAxis, 0.01, BABYLON.Space.WORLD);
                     angle += 0.01;
+
+                    if(angle > Math.PI * 2){
+                        angle = 0;
+                    }
+
+                    console.log(angle);
                 }
                 else {
                     console.log("no mensClone");
                 }
+                */
 
             });
 
@@ -299,7 +355,7 @@
 
                 let meshTemp = scene.getMeshByName('customMesh_' + mesh.id);
 
-                if(meshTemp){
+                if (meshTemp) {
                     meshTemp.dispose();
                 }
 
@@ -312,7 +368,7 @@
                 // 查找已存在的自定义 mesh
                 const customMesh = scene.getMeshByName('customMesh_' + mesh.id);
 
-                if(!customMesh){
+                if (!customMesh) {
                     console.log("没有找到mesh，不更新");
                     return;
                 }
