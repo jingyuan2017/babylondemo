@@ -81,6 +81,8 @@
             // This creates a basic Babylon Scene object (non-mesh)
             var scene = new BABYLON.Scene(engine);
 
+            scene.debugLayer.show();
+
             //scene.debugLayer.show({
             //    initialTab: 1
             //});
@@ -622,7 +624,7 @@
 
                 crowd = navigationPlugin.createCrowd(10, 0.1, scene);
 
-                var agentParams = {
+                var agentParams1 = {
                     radius: 0.1,
                     height: 0.2,
                     maxAcceleration: 4.0,
@@ -635,7 +637,7 @@
                 //for (i = 0; i < 1; i++) {
 
                 //添加一个cube做测试
-                /*
+                
                 var width = 0.20;
                 var agentCube = BABYLON.MeshBuilder.CreateBox("cube", { size: width, height: width }, scene);
                 var targetCube1 = BABYLON.MeshBuilder.CreateBox("cube", { size: 0.1, height: 0.1 }, scene);
@@ -648,15 +650,27 @@
                 var randomPos = navigationPlugin.getRandomPointAround(new BABYLON.Vector3(-2.0, 0.1, -1.8), 0.5);
                 agentCube.parent = transform;
 
-                var agentIndex = crowd.addAgent(randomPos, agentParams, transform);
+                var agentIndex = crowd.addAgent(randomPos, agentParams1, transform);
                 agents.push({ idx: agentIndex, trf: transform, mesh: agentCube, target: targetCube1 });
-                */
+                
+                console.log(agentCube);
 
                 //}
 
 
                 //添加一个角色做测试
-                var width = 0.20;
+
+                var agentParams2 = {
+                    radius: 0.5,
+                    height: 1,
+                    maxAcceleration: 4.0,
+                    maxSpeed: 1.0,
+                    collisionQueryRange: 1,
+                    pathOptimizationRange: 0.0,
+                    separationWeight: 0.5
+                };
+
+
                 var people = model.meshes[0].clone('people');
                 people.scaling = new BABYLON.Vector3(1, 1, 1);
                 var targetCube2 = BABYLON.MeshBuilder.CreateBox("cube", { size: 0.1, height: 0.1 }, scene);
@@ -665,14 +679,16 @@
                 var randomPos2 = navigationPlugin.getRandomPointAround(new BABYLON.Vector3(-2.0, 0.1, -1.8), 0.5);
                 people.parent = transformPeople;
 
-                var agentIndex = crowd.addAgent(randomPos2, agentParams, transformPeople);
+                var agentIndex = crowd.addAgent(randomPos2, agentParams2, transformPeople);
                 agents.push({ idx: agentIndex, trf: transformPeople, mesh: people , target: targetCube2 });
 
+                console.log(people);
             }
 
 
 
             scene.onBeforeRenderObservable.add(() => {
+                return;
                 var agentCount = agents.length;
                 for (let i = 0; i < agentCount; i++) {
                     var ag = agents[i];
