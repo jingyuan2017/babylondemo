@@ -81,7 +81,7 @@
             // This creates a basic Babylon Scene object (non-mesh)
             var scene = new BABYLON.Scene(engine);
 
-            scene.debugLayer.show();
+            //scene.debugLayer.show();
 
             //scene.debugLayer.show({
             //    initialTab: 1
@@ -596,7 +596,7 @@
 
                 var navmeshParameters = {
                     cs: 0.2,
-                    ch: 0.2,
+                    ch: 0.01,
                     walkableSlopeAngle: 90,
                     walkableHeight: 1.0,
                     walkableClimb: 1,
@@ -637,7 +637,7 @@
                 //for (i = 0; i < 1; i++) {
 
                 //添加一个cube做测试
-                
+                /*
                 var width = 0.20;
                 var agentCube = BABYLON.MeshBuilder.CreateBox("cube", { size: width, height: width }, scene);
                 var targetCube1 = BABYLON.MeshBuilder.CreateBox("cube", { size: 0.1, height: 0.1 }, scene);
@@ -652,9 +652,9 @@
 
                 var agentIndex = crowd.addAgent(randomPos, agentParams1, transform);
                 agents.push({ idx: agentIndex, trf: transform, mesh: agentCube, target: targetCube1 });
-                
-                console.log(agentCube);
 
+                console.log(agentCube);
+                */
                 //}
 
 
@@ -682,7 +682,7 @@
                 var agentIndex = crowd.addAgent(randomPos2, agentParams2, transformPeople);
                 agents.push({ idx: agentIndex, trf: transformPeople, mesh: people , target: targetCube2 });
 
-                console.log(people);
+                console.log("people : ", people);
             }
 
 
