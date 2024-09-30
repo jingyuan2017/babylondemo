@@ -141,8 +141,6 @@
 
             let b = model.meshes[0];
 
-            var b_transform = new BABYLON.TransformNode();
-
             console.log("before : " + b.rotation);
 
 
@@ -181,7 +179,7 @@
 
                             console.log(b.rotation);
 
-                            b.rotation = new BABYLON.Vector3(0, -angle, 0);
+                            //b.rotation = new BABYLON.Vector3(0, -angle, 0);
                             console.log("After rotation: " + b.rotation);
 
                         });
@@ -195,7 +193,7 @@
 
 
             var beta = Math.random() * 2 * Math.PI;
-            b.rotate(BABYLON.Axis.Y, beta, BABYLON.Space.WORLD);
+            //b.rotate(BABYLON.Axis.Y, beta, BABYLON.Space.WORLD);
 
 
             console.log("after : " + b.rotation);
@@ -212,7 +210,7 @@
             let hitTest;
 
             //b.isVisible = false;
-            b.scaling = new BABYLON.Vector3(1, 1, 1);
+            b.scaling = new BABYLON.Vector3(0.2, 0.2, 0.2);
 
 
             const mat1 = new BABYLON.StandardMaterial('1', scene);
@@ -637,47 +635,58 @@
                 //for (i = 0; i < 1; i++) {
 
                 //添加一个cube做测试
+                /*
                 var width = 0.20;
                 var agentCube = BABYLON.MeshBuilder.CreateBox("cube", { size: width, height: width }, scene);
-                //var targetCube = BABYLON.MeshBuilder.CreateBox("cube", { size: 0.1, height: 0.1 }, scene);
-                var matAgent = new BABYLON.StandardMaterial('mat2', scene);
-                var variation = Math.random();
-                matAgent.diffuseColor = new BABYLON.Color3(0.4 + variation * 0.6, 0.3, 1.0 - variation * 0.3);
-                agentCube.material = matAgent;
+                var targetCube1 = BABYLON.MeshBuilder.CreateBox("cube", { size: 0.1, height: 0.1 }, scene);
+                //var matAgent = new BABYLON.StandardMaterial('mat2', scene);
+                //var variation = Math.random();
+                //matAgent.diffuseColor = new BABYLON.Color3(0.4 + variation * 0.6, 0.3, 1.0 - variation * 0.3);
+                //agentCube.material = matAgent;
+
                 var transform = new BABYLON.TransformNode();
                 var randomPos = navigationPlugin.getRandomPointAround(new BABYLON.Vector3(-2.0, 0.1, -1.8), 0.5);
                 agentCube.parent = transform;
+
                 var agentIndex = crowd.addAgent(randomPos, agentParams, transform);
-                agents.push({ idx: agentIndex, trf: transform, mesh: agentCube});
-                //agents.push({ idx: agentIndex, trf: transform, mesh: agentCube, target: targetCube });
+                agents.push({ idx: agentIndex, trf: transform, mesh: agentCube, target: targetCube1 });
+                */
+
                 //}
 
 
                 //添加一个角色做测试
                 var width = 0.20;
                 var people = model.meshes[0].clone('people');
+                people.scaling = new BABYLON.Vector3(1, 1, 1);
+                var targetCube2 = BABYLON.MeshBuilder.CreateBox("cube", { size: 0.1, height: 0.1 }, scene);
 
                 var transformPeople = new BABYLON.TransformNode();
-
                 var randomPos2 = navigationPlugin.getRandomPointAround(new BABYLON.Vector3(-2.0, 0.1, -1.8), 0.5);
-
                 people.parent = transformPeople;
 
                 var agentIndex = crowd.addAgent(randomPos2, agentParams, transformPeople);
-                agents.push({ idx: agentIndex, trf: transformPeople, mesh: people});
-
-
-
-                //b.parent = b_transform;
-
-                //console.log("b_transform position : ", b_transform.position);
-
-                //var agentIndex = crowd.addAgent(b.position, agentParams, b_transform);
-                //agents.push({ idx: agentIndex, trf: transform, mesh: b, target: targetCube });
+                agents.push({ idx: agentIndex, trf: transformPeople, mesh: people , target: targetCube2 });
 
             }
 
 
+
+            scene.onBeforeRenderObservable.add(() => {
+                var agentCount = agents.length;
+                for (let i = 0; i < agentCount; i++) {
+                    var ag = agents[i];
+                    ag.mesh.position = crowd.getAgentPosition(ag.idx);
+                    let vel = crowd.getAgentVelocity(ag.idx);
+                    crowd.getAgentNextTargetPathToRef(ag.idx, ag.target.position);
+                    if (vel.length() > 0.2) {
+                        vel.normalize();
+                        var desiredRotation = Math.atan2(vel.x, vel.z);
+                        ag.mesh.rotationQuaternion = BABYLON.Quaternion.RotationYawPitchRoll(desiredRotation, 0, 0);
+                        //ag.mesh.rotation.y = ag.mesh.rotation.y + (desiredRotation - ag.mesh.rotation.y) * 0.05;
+                    }
+                }
+            });
 
 
             return scene;
