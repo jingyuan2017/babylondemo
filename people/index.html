@@ -153,7 +153,7 @@
                         //只处理摇杆晃动，不处理按下
                         thumbstickComponent.onAxisValueChangedObservable.add((axes) => {
 
-                            if(axes.x == 0 && axes.y == 0){
+                            if (axes.x == 0 && axes.y == 0) {
                                 return;
                             }
 
@@ -211,8 +211,6 @@
 
             var obj = null;
 
-            const tn = new BABYLON.TransformNode("tn", scene);
-
             scene.onPointerDown = (evt, pickInfo) => {
                 //console.log(evt);
                 console.log(pickInfo);
@@ -221,12 +219,24 @@
                     //console.log("src position : " , b.position);
                     console.log("pickedPoint : ", pickInfo.pickedPoint);
 
+                    var endPoint = pickInfo.pickedPoint;
+
+                    //移动人物测试
+                    var agents = crowd.getAgents();
+                    console.log("pick agents : ", agents);
+
+                    var i;
+                    for (i = 0; i < agents.length; i++) {
+                        crowd.agentGoto(agents[i], navigationPlugin.getClosestPoint(endPoint));
+                    }
+
+
                     if (pickInfo.getNormal()) {
                         //打印光标位置法线，用于确认是否水平面
                         console.log("normal : ", pickInfo.getNormal().normalize());
                     }
 
-                    b.position = pickInfo.pickedPoint;
+                    //b.position = pickInfo.pickedPoint;
                 } else {
                     console.log("pickPoint is null");
                 }
@@ -259,6 +269,8 @@
 
             });
 
+
+            //处理平面
             const planes = [];
 
 
@@ -290,6 +302,10 @@
 
                 plane.mesh.rotationQuaternion = new BABYLON.Quaternion();
                 plane.transformationMatrix.decompose(plane.mesh.scaling, plane.mesh.rotationQuaternion, plane.mesh.position);
+
+                if (plane.xrPlane.semanticLabel == "floor") {
+                    setupCrowd(plane.mesh, b);
+                }
             });
 
             xrPlanes.onPlaneUpdatedObservable.add(plane => {
@@ -546,6 +562,83 @@
             plane.lookAt(camera.position, 0, 0, 0);
 
             plane.position = new BABYLON.Vector3(0, 2, -1);
+
+            await Recast();
+
+
+            var crowd = null;
+            var navigationPlugin = new BABYLON.RecastJSPlugin();
+
+            function setupCrowd(staticMesh) {
+                //处理地面运动
+
+                var navmeshParameters = {
+                    cs: 0.2,
+                    ch: 0.2,
+                    walkableSlopeAngle: 90,
+                    walkableHeight: 1.0,
+                    walkableClimb: 1,
+                    walkableRadius: 1,
+                    maxEdgeLen: 12.,
+                    maxSimplificationError: 1.3,
+                    minRegionArea: 8,
+                    mergeRegionArea: 20,
+                    maxVertsPerPoly: 6,
+                    detailSampleDist: 6,
+                    detailSampleMaxError: 1,
+                };
+
+                navigationPlugin.createNavMesh([staticMesh], navmeshParameters);
+
+                /*
+                var navmeshdebug = navigationPlugin.createDebugNavMesh(scene);
+                navmeshdebug.position = new BABYLON.Vector3(0, 0.01, 0);
+
+                var matdebug = new BABYLON.StandardMaterial('matdebug', scene);
+                matdebug.diffuseColor = new BABYLON.Color3(0.1, 0.2, 1);
+                matdebug.alpha = 0.2;
+                navmeshdebug.material = matdebug;
+                */
+
+                crowd = navigationPlugin.createCrowd(10, 0.1, scene);
+
+                var agentParams = {
+                    radius: 0.1,
+                    height: 1,
+                    maxAcceleration: 4.0,
+                    maxSpeed: 1.0,
+                    collisionQueryRange: 0.5,
+                    pathOptimizationRange: 0.0,
+                    separationWeight: 1.0
+                };
+
+                for (i = 0; i < 0; i++) {
+                    var width = 0.20;
+                    var agentCube = BABYLON.MeshBuilder.CreateBox("cube", { size: width, height: width }, scene);
+                    var targetCube = BABYLON.MeshBuilder.CreateBox("cube", { size: 0.1, height: 0.1 }, scene);
+                    var matAgent = new BABYLON.StandardMaterial('mat2', scene);
+                    var variation = Math.random();
+                    matAgent.diffuseColor = new BABYLON.Color3(0.4 + variation * 0.6, 0.3, 1.0 - variation * 0.3);
+                    agentCube.material = matAgent;
+                    var randomPos = navigationPlugin.getRandomPointAround(new BABYLON.Vector3(-2.0, 0.1, -1.8), 0.5);
+                    var transform = new BABYLON.TransformNode();
+                    agentCube.parent = transform;
+                    var agentIndex = crowd.addAgent(randomPos, agentParams, transform);
+                    //agents.push({ idx: agentIndex, trf: transform, mesh: agentCube, target: targetCube });
+                }
+
+                var transform = new BABYLON.TransformNode();
+                b.parent = transform;
+
+                console.log("transform position : ",transform.position);
+
+                var agentIndex = crowd.addAgent(b.position, agentParams, transform);
+                //agents.push({ idx: agentIndex, trf: transform, mesh: b, target: targetCube });
+
+            }
+
+
+
 
             return scene;
 
