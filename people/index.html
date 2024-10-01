@@ -115,13 +115,15 @@
             var navigationPlugin = new BABYLON.RecastJSPlugin();
 
 
-            const model = await BABYLON.SceneLoader.ImportMeshAsync("", "https://ai.58auv.com/models/", "threejs_vrm_sample.glb", scene);
+            //const model = await BABYLON.SceneLoader.ImportMeshAsync("", "https://ai.58auv.com/models/", "threejs_vrm_sample.glb", scene);
 
             //const model = await BABYLON.SceneLoader.ImportMeshAsync("", "https://ai.58auv.com/models/", "mixamo.glb", scene);
 
+            //const model = await BABYLON.SceneLoader.ImportMeshAsync("", "https://ai.58auv.com/models/", "triple_2.glb", scene);
+
             //const model = await BABYLON.SceneLoader.ImportMeshAsync("", "https://ai.58auv.com/models/", "vroid1.glb", scene);
 
-            //const model = await BABYLON.SceneLoader.ImportMeshAsync("", "/models/", "dummy3.babylon", scene);
+            const model = await BABYLON.SceneLoader.ImportMeshAsync("", "/models/", "dummy3.babylon", scene);
 
             var xr = await scene.createDefaultXRExperienceAsync({
                 uiOptions: {
@@ -144,6 +146,24 @@
             let b = model.meshes[0];
 
             console.log("before : " + b.rotation);
+
+
+            //准备骨骼动画
+            var skeleton = model.skeletons[0];
+
+            skeleton.animationPropertiesOverride = new BABYLON.AnimationPropertiesOverride();
+            skeleton.animationPropertiesOverride.enableBlending = true;
+            skeleton.animationPropertiesOverride.blendingSpeed = 0.05;
+            skeleton.animationPropertiesOverride.loopMode = 1;
+
+            var idleRange = skeleton.getAnimationRange("YBot_Idle");
+            var walkRange = skeleton.getAnimationRange("YBot_Walk");
+            var runRange = skeleton.getAnimationRange("YBot_Run");
+            var leftRange = skeleton.getAnimationRange("YBot_LeftStrafeWalk");
+            var rightRange = skeleton.getAnimationRange("YBot_RightStrafeWalk");
+            
+
+
 
 
             //处理手柄旋转事件
@@ -594,6 +614,9 @@
             function setupCrowd(staticMesh) {
                 //处理地面运动
 
+                var cube = BABYLON.MeshBuilder.CreateBox("cube", { size: 1, height: 3 }, scene);
+                cube.position = new BABYLON.Vector3(1, 1.5, 0);
+
                 var navmeshParameters = {
                     cs: 0.2,
                     ch: 0.01,
@@ -610,7 +633,7 @@
                     detailSampleMaxError: 1,
                 };
 
-                navigationPlugin.createNavMesh([staticMesh], navmeshParameters);
+                navigationPlugin.createNavMesh([staticMesh, cube], navmeshParameters);
 
                 /*
                 var navmeshdebug = navigationPlugin.createDebugNavMesh(scene);
@@ -680,15 +703,69 @@
                 people.parent = transformPeople;
 
                 var agentIndex = crowd.addAgent(randomPos2, agentParams2, transformPeople);
-                agents.push({ idx: agentIndex, trf: transformPeople, mesh: people , target: targetCube2 });
+                agents.push({ idx: agentIndex, trf: transformPeople, mesh: people, target: targetCube2 });
 
                 console.log("people : ", people);
             }
 
 
+            var isWalking = false;
+            var walking = null;
 
             scene.onBeforeRenderObservable.add(() => {
+
+                var agentCount = agents.length;
+
+                for (let i = 0; i < agentCount; i++) {
+
+                    var ag = agents[i];
+
+                    let vel = crowd.getAgentVelocity(ag.idx);
+
+                    if (vel.length() > 0.1) {
+
+                        //开启走路动画
+                        if(isWalking == false){
+                            scene.beginAnimation(skeleton, walkRange.from, walkRange.to, true);
+                            isWalking = true;
+                        }
+
+                        //ag.mesh.position = crowd.getAgentPosition(ag.idx);
+                        console.log(ag.mesh.name, ag.mesh.position);
+
+                        console.log(ag.trf.name, ag.trf.position);
+
+                        var temp = new BABYLON.Vector3();
+
+                        crowd.getAgentNextTargetPathToRef(ag.idx, temp);
+
+                        console.log("road point position:", temp);// 计算向量AB
+
+                        
+
+                        // 计算方向向量
+                        let directionX = temp.x - ag.trf.position.x;
+                        let directionZ = temp.z - ag.trf.position.z;
+
+                        // 计算旋转角度
+                        let angle = Math.atan2(directionX, directionZ);
+
+                        // 将角度转换为 Vector3，设置给 a.rotation
+                        ag.mesh.rotation = new BABYLON.Vector3(0, angle, 0);
+
+                    }else{
+                        //关闭走路动画
+                        if(isWalking == true){
+                            scene.beginAnimation(skeleton, idleRange.from, idleRange.to, true);
+                            isWalking = false;
+                        }
+                    }
+
+                    console.log(ag.mesh.name , crowd.getAgentState(ag.idx));
+                }
+
                 return;
+
                 var agentCount = agents.length;
                 for (let i = 0; i < agentCount; i++) {
                     var ag = agents[i];
