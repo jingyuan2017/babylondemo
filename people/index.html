@@ -722,7 +722,7 @@
 
                     let vel = crowd.getAgentVelocity(ag.idx);
 
-                    if (vel.length() > 0.1) {
+                    if (vel.length() > 0.2) {
 
                         //开启走路动画
                         if(isWalking == false){
@@ -764,21 +764,6 @@
                     console.log(ag.mesh.name , crowd.getAgentState(ag.idx));
                 }
 
-                return;
-
-                var agentCount = agents.length;
-                for (let i = 0; i < agentCount; i++) {
-                    var ag = agents[i];
-                    ag.mesh.position = crowd.getAgentPosition(ag.idx);
-                    let vel = crowd.getAgentVelocity(ag.idx);
-                    crowd.getAgentNextTargetPathToRef(ag.idx, ag.target.position);
-                    if (vel.length() > 0.2) {
-                        vel.normalize();
-                        var desiredRotation = Math.atan2(vel.x, vel.z);
-                        ag.mesh.rotationQuaternion = BABYLON.Quaternion.RotationYawPitchRoll(desiredRotation, 0, 0);
-                        //ag.mesh.rotation.y = ag.mesh.rotation.y + (desiredRotation - ag.mesh.rotation.y) * 0.05;
-                    }
-                }
             });
 
 
